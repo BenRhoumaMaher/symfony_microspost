@@ -1,0 +1,7 @@
+index:
+  path: /
+  controller: App\Controller\Dashboard\dashboardController::index
+
+profile:
+  path: /profile
+  controller: App\Controller\Dashboard\dashboardController::profile  

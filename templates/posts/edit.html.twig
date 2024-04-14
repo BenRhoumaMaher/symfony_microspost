@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+Edit post
+{% endblock %}
+{% block body %}
+<div class="my-14">
+		<h1 class="text-4xl">Edit blog post</h1>
+		<div class="w-full">
+			{{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4' }}
+			) }}
+				<div class="mb-6">
+					{{ form_label(form.title, 'Post title', {'label_attr': {'class': 'block text-gray-700 font-bold mb-2' }}
+				) }}
+                {% set title_error = form_errors(form.title) ? 'border-red-500 ' : ''%}
+					{{ form_widget(form.title, {'attr': {'class': (title_error)~'shadow appearance-none border rounded w-full
+            py-2 px-3 text-gray-700 mb-2 leading-tight focus:outline-none focus:shadow-outline','placeholder':'write post content here' }}
+				) }}
+					{% if form.title.vars['errors']|length > 0 %}
+					<p class="text-red-500 text-xs italic">
+						{% for error in form.title.vars['errors'] %}
+							<span>{{ error.message }}</span>
+						{% endfor %}
+					</p>
+				{% endif %}
+				</div>
+				<div class="mb-6">
+					{{ form_label(form.content, 'Post title', {'label_attr': {'class': 'block text-gray-700 font-bold mb-2' }}
+				) }}
+                {% set content_error = form_errors(form.content) ? 'border-red-500 ' : '' %}
+					{{ form_widget(form.content, {'attr': {'class': (content_error)~'drop-shadow-lg w-full h-60 p-4 border
+            focus:outline-none focus:shadow-outline','placeholder':'write post content here'}}) }}
+				{% if form.content.vars['errors']|length > 0 %}
+					<p class="text-red-500 text-xs italic">
+						{% for error in form.content.vars['errors'] %}
+							<span>{{ error.message }}</span>
+						{% endfor %}
+					</p>
+				{% endif %}
+				</div>
+				{{ form_widget(form.save, {'attr': {'class': 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4
+        rounded cursor-pointer' }}
+			) }}
+			{{ form_end(form) }}
+		</div>
+	</div>
+{% endblock %}

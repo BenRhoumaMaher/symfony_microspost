@@ -1,0 +1,29 @@
+index:
+  path: /
+  controller: App\Controller\Posts\PostsController::index
+  methods: GET
+
+user:
+  path: /user/{id}
+  controller: App\Controller\Posts\PostsController::user
+  methods: GET
+
+togglefollow:
+  path: /togglefollow/{user}
+  controller: App\Controller\Posts\PostsController::toggleFollow
+
+new:
+  path: /new
+  controller: App\Controller\Posts\PostsController::new
+
+show:
+  path: /show/{id}
+  controller: App\Controller\Posts\PostsController::show 
+
+edit:
+  path: /edit/{id}
+  controller: App\Controller\Posts\PostsController::edit  
+
+delete:
+  path: /delete/{id}
+  controller: App\Controller\Posts\PostsController::delete      

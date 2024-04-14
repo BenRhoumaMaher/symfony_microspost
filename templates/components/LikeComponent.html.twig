@@ -1,0 +1,45 @@
+<div class="flex" {{ attributes }}>
+{% if app.user %}
+	{% if isLiked %}
+	<a id="{{post.id}}" title="undo like" class="cursor-pointer" data-action="live#action" data-action-name="undoLike">
+
+		{{ component('like_icon', {class: 'fill-green-500 hover:stroke-cyan-700'}) }}
+	</a>
+	{% elseif isDisliked %}
+	<a title="you disliked this" class="post">
+		{{ component('like_icon', {class: 'fill-green-300'}) }}
+	</a>
+	{% else %}
+    <a title="like" class="cursor-pointer" data-action="live#action" data-action-name="like">
+			{{ component('like_icon', {class: 'fill-green-300 hover:stroke-cyan-700'}) }}
+		</a>
+		{% endif %}
+        ({{post.usersThatLike|length}})
+		{% if isDisliked ?? false %}
+	<a title="undo dislike" class="ml-2 cursor-pointer" data-action="live#action" data-action-name="undoDislike">
+		{{ component('unlike_icon', {class: 'fill-red-500 hover:stroke-cyan-700'}) }}
+	</a>
+	{% elseif isLiked %}		
+	<a title="you like this post" class="ml-2">
+		{{ component('unlike_icon', {class: 'fill-red-300'}) }}
+	</a>
+	{% else %}
+    <a title="dislike" class="ml-2 cursor-pointer" data-action="live#action" data-action-name="dislike">
+			{{ component('unlike_icon', {class: 'fill-red-300 hover:stroke-cyan-700'}) }}
+		</a>
+		{% endif %}
+        ({{post.usersThatDontLike|length}})
+    {% else %}
+    <a href="#" title="login to like" class="pointer-events-none">
+			{{ component('like_icon', {class: 'fill-green-300'}) }}
+		</a>
+		({{post.usersThatLike|length}})
+        login to like
+		<a href="#" title="login to dislike" class="ml-2 pointer-events-none">
+			{{ component('unlike_icon', {class: 'fill-red-300'}) }}
+		</a>
+		({{post.usersThatDontLike|length}})
+        login to dislike
+        {% endif %}
+</div>
+

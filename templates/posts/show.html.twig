@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	Show a post
+{% endblock %}
+{% block body %}
+<div class="my-14 flex flex-col">
+		<div class="text-center">
+			<p class="text-gray-500">{{post.createdAt|date("j M Y")}}</p>
+			<p class="italic text-sm">by {{post.user.name}}
+				<img class="ml-2 object-scale-down h-14 w-14 rounded-full inline" src="http://localhost:8000/images/test-image.png" alt="profile image"></p>
+
+			<h1 class="mb-10 text-6xl font-bold tracking-tighter mt-5">{{post.title}}</h1>
+			<hr>
+		</div>
+
+		<p class="text-gray-500 mt-10 leading-8">
+			{{post.content}}
+		</p>
+
+        <div class="flex mt-10">
+			{{component('likeComponent',{post:post, isLiked: isLiked,
+			isDisliked: isDisliked})}}
+            {% if app.user and app.user.id != post.user.id %}
+			{% if isFollowing %}
+			You follow:&nbsp;<a class="text-green-500 hover:text-green-700" href="{{ path('posts_user', {id:post.user.id}) }}">
+				{{post.user.name}}</a>
+			{% else %}
+			<a href="{{ path('posts_togglefollow', {user:post.user.id}) }}" class="ml-3 inline font-bold text-sm px-6 py-2 text-white rounded bg-blue-500 hover:bg-blue-600">
+				Follow the post author</a>
+            {% endif %}
+			{% endif %}
+		</div>
+
+	</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	Create a new post
+{% endblock %}
+{% block body %}
+	<div class="my-14">
+		<h1 class="text-4xl">New blog post</h1>
+		<div class="w-full">
+			{# <form method="POST" action="{{ path('posts.new') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"> #}
+            {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'}}) }}
+				<div class="mb-6">
+					{{ form_label(form.title, 'Post title', {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+                    {% set title_error = form_errors(form.title) ? 'border-red-500 ' : ''%}
+					{{ form_widget(form.title, {'attr': {'class': (title_error)~'shadow appearance-none border rounded w-full
+            py-2 px-3 text-gray-700 mb-2 leading-tight focus:outline-none focus:shadow-outline', 'value':'','placeholder':'write post title here'}}) }}
+					{# <p class="text-red-500 text-xs italic">{{ form_errors(form.title) }}</p> #}
+                    {% if form.title.vars['errors']|length > 0 %}
+                        <p class="text-red-500 text-xs italic">
+                            {% for error in form.title.vars['errors'] %}
+                            <span>{{ error.message }}</span>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+				</div>
+				<div class="mb-6">
+					{{ form_label(form.content, 'Post content', {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}})
+				            }}
+                    {% set content_error = form_errors(form.content) ? 'border-red-500 ' : '' %}
+					{{ form_widget(form.content, {'attr': {'class': (content_error)~'drop-shadow-lg w-full h-60 p-4 border
+            focus:outline-none focus:shadow-outline','placeholder':'write post content here'}, 'value':''}) }}
+					{# <p class="text-red-500 text-xs italic">{{ form_errors(form.content) }}</p> #}
+                    {% if form.content.vars['errors']|length > 0 %}
+                        <p class="text-red-500 text-xs italic">
+                            {% for error in form.content.vars['errors'] %}
+                                <span>{{ error.message }}</span>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+				</div>
+				{{ form_widget(form.save, {'attr': {'class': 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4
+        rounded cursor-pointer'}}) }}
+			{{ form_end(form) }}
+		</div>
+	</div>
+{% endblock %}

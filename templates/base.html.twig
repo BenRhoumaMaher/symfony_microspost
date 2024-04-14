@@ -1,19 +1,115 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+<html lang="{{ app.request.locale }}">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>
+			{% block title %}Welcome to the Symfony Micro Blog!
+			{% endblock %}
+		</title>
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('app') }}
+		{% endblock %}
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
-</html>
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+			<script src="https://js.pusher.com/7.2.0/pusher.min.js"></script>
+			<script>
+			var pusher = new Pusher('3011b466a6b4d89bddaa', {
+				cluster: 'mt1'
+			})
+			var channel = pusher.subscribe('my-channel');
+			channel.bind('new-post-event', function(data) {
+				var event = new CustomEvent('message-received', {
+					detail: {
+						msg: data
+					}
+				})
+				window.dispatchEvent(event)
+			})
+			</script> 
+		{% endblock %}
+	</head>
+	<body
+		class="font-sans antialiased">
+
+		{# notification #}
+		<div x-data="{ show: false, message: '' }" x-show="show" @message-received.window="show=true; message=$event.detail.msg; setTimeout(() => show = false, 5000);" x-transition @close.window="show=false" class="flex justify-between m-auto w-3/4 text-blue-200 shadow-inner p-3 bg-blue-600">
+			<p>
+				<strong>Info
+				</strong>
+				<span x-html="message"></span>
+			</p>
+			<strong @click="$dispatch('close')" class="text-xl align-center cursor-pointer">&times;</strong>
+		</div>
+
+		{# container for all #}
+		<div
+			class="container mx-auto p-10">
+			{# header #}
+			<header
+				class="flex justify-between items-center">
+				{# logo, search #}
+				<div class="flex items-center">
+
+					{{include('svg_icons/laravel_logo.html.twig')}}
+
+					<div class="text-3xl hidden md:block tracking-tight text-gray-600 font-medium ml-2">
+						<a href="{{path('posts_index')}}">SymfonyMicroBlog</a>
+					</div>
+
+					{{component('searchComponent')}}
+
+				</div>
+				{# links #}
+				<div class="space-x-6 hidden md:flex text-lg">
+					{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+					<p>Logged as:
+						<a class="hover:text-stone-500" href="{{path('dashboard_index')}}">{{ app.user.email }}</a>
+					</p>
+					{{include('_logout_form.html.twig')}}
+					<a href="{{ path('posts_new') }}" class="inline font-bold text-sm px-6 py-2 text-white rounded-full bg-red-500 hover:bg-red-600">
+						New blog post</a>
+				 	{% else %} 			
+					<a class="tracking-widest hover:text-stone-500" href="{{path('app_login')}}">Login</a>
+					<a class="tracking-widest hover:text-stone-500" href="{{path('app_register')}}">Register</a>
+					{% endif %}
+				</div>
+
+				{# hamburger icon #}
+				<div id="hamburger-icon" class="space-y-2 md:hidden cursor-pointer">
+					<div class="w-8 h-0.5 bg-gray-600"></div>
+					<div class="w-8 h-0.5 bg-gray-600"></div>
+					<div class="w-8 h-0.5 bg-gray-600"></div>
+				</div>
+
+			</header>
+
+			{# mobile menu #}
+			<div class="md:hidden">
+				<div id="mobile-menu" class="flex-col items-center hidden py-8 mt-10 space-y-6 bg-white left-6 right-6 drop-shadow-lg">
+					{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+					<p>Logged as:
+						<a class="hover:text-stone-500" href="/">{{ app.user.email }}</a>
+					</p>
+					{{include('_logout_form.html.twig')}}
+					<a href="{{ path('posts_new') }}" class="inline font-bold text-sm px-6 py-2 text-white rounded-full bg-red-500 hover:bg-red-600">
+						New blog post</a>
+					{% else %}	
+					<a class="tracking-widest hover:text-stone-500" href="/">Login</a>
+					<a class="tracking-widest hover:text-stone-500" href="/">Register</a>
+					{% endif %}
+				</div>
+			</div>
+
+			
+
+			{% block body %}{% endblock %}
+
+			{# footer #}
+			<footer class="flex items-center justify-center mt-12">
+				&copy; {{ "now"|date("Y") }} SymfonyMicroBlog
+			</footer>
+
+		</div>
+	</body>

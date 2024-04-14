@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	All posts
+{% endblock %}
+{% block body %}
+            {# latest posts #}
+            <div class="my-14">
+				<h1 class="text-6xl tracking-tighter font-bold mb-6">Latest posts {{ user ?? '' }}
+				</h1>
+				<p class="mb-8 text-gray-500">A blog created by Maher Ben Rhouma
+				</p>
+				<hr/>
+			</div>
+
+            {# posts #}
+			{% for post in posts %}
+            <div class="my-14 flex flex-col md:flex-row">
+				<p class="mb-8 text-gray-500 mr-20">{{ post.createdAt | date("j M Y") }}</p>
+				<div class="space-y-4">
+					<h1 class="text-3xl font-bold tracking-tighter">{{post.title}}</h1>
+					<p class="text-gray-500">{{ post.content | slice(0,200) ~ '...' }}</p>
+					<p>
+						<a class="text-red-500 hover:text-red-900 mt-8" href="{{ path('posts_show', {id:post.id, _locale:app.current_route_parameters|last}) }}">Read more</a>
+					</p>
+					{% if app.user and app.user.id == post.user.id %}
+                    <div class="flex">
+                    <a href="{{ path('posts_edit', {id:post.id}) }}" title="edit" class="mr-2 cursor-pointer">
+                        {{include('svg_icons/edit_icon.html.twig')}}
+                    </a>
+
+                    <form method="POST" action="{{ path('posts_delete', {id:post.id}) }}">
+                        <button type="submit" href="{{ path('posts_delete', {id:post.id}) }}"
+                            onclick="return confirm('Are you sure?')" title="delete" class="cursor-pointer">
+                            {{include('svg_icons/delete_icon.html.twig')}}
+                        </button>
+                    </form>
+                </div>
+				{% endif %}
+				</div>
+			</div>
+			<hr/>
+			{% endfor %}
+			<br>
+			{{ knp_pagination_render(posts) }}
+{% endblock %}
+     
+

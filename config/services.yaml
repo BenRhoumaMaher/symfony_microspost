@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    images_directory: '%kernel.project_dir%/public/images'
 
 services:
     # default configuration for services in *this* file
@@ -19,6 +20,20 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\Services\ImageUploader:
+        arguments:
+            $targetDirectory : '%images_directory%'
+    App\EventListener\newPostListener:
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }      
+    Pusher\Pusher:
+        arguments:
+            $auth_key: '%env(PUSHER_KEY)%'
+            $secret: '%env(PUSHER_SECRET)%'
+            $app_id: '%env(PUSHER_APP_ID)%'
+            $options:
+                cluster: '%env(PUSHER_CLUSTER)%'
+                useTLS: true        
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
