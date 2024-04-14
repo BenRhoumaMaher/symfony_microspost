@@ -1,19 +1,45 @@
 <?php
+/**
+ * User.php
+ *
+ * This file contains the User entity class.
+ *
+ * @category Entities
+ * @package  App\Entity
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ */
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Post;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+
+/**
+ * User
+ *
+ * @category Entities
+ *
+ * @package App\Entity
+ *
+ * @author Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ *
+ * @license No license (Personal project)
+ *
+ * @link https://symfony.com/doc/current/controller.html
+ */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -30,9 +56,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -59,6 +82,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinTable(name: "post_user_dislikes")]
     private Collection $disklikedPosts;
 
+    /**
+     * Constructor method.
+     */
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -68,17 +94,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->disklikedPosts = new ArrayCollection();
     }
 
-
+    /**
+     * Get the unique identifier of the user.
+     *
+     * @return int|null The ID of the user.
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
-
+    /**
+     * Get the email address of the user.
+     *
+     * @return string|null The email address of the user.
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
-
+    /**
+     * Set the email address of the user.
+     *
+     * @param string $email The email address to set.
+     *
+     * @return static The updated User entity.
+     */
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -89,7 +129,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * A visual identifier that represents this user.
      *
-     * @see UserInterface
+     * @return string The email address of the user.
      */
     public function getUserIdentifier(): string
     {
@@ -97,7 +137,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see UserInterface
+     * Get the roles assigned to the user.
+     *
+     * @return array The roles of the user.
      */
     public function getRoles(): array
     {
@@ -108,6 +150,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /**
+     * Set the roles assigned to the user.
+     *
+     * @param array $roles The roles to set.
+     *
+     * @return static The updated User entity.
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -116,13 +165,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see PasswordAuthenticatedUserInterface
+     * Get the hashed password of the user.
+     *
+     * @return string The hashed password.
      */
     public function getPassword(): string
     {
         return $this->password;
     }
 
+    /**
+     * Set the hashed password of the user.
+     *
+     * @param string $password The hashed password to set.
+     *
+     * @return static The updated User entity.
+     */
     public function setPassword(string $password): static
     {
         $this->password = $password;
@@ -131,7 +189,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see UserInterface
+     * Erase the user credentials.
+     *
+     * @return void
      */
     public function eraseCredentials(): void
     {
@@ -139,11 +199,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
+    /**
+     * Get the name of the user.
+     *
+     * @return string|null The name of the user.
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Set the name of the user.
+     *
+     * @param string|null $name The name to set.
+     *
+     * @return static The updated User entity.
+     */
     public function setName(?string $name): static
     {
         $this->name = $name;
@@ -152,13 +224,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Post>
+     * Get the posts authored by the user.
+     *
+     * @return Collection<Post> The posts authored by the user.
      */
     public function getPosts(): Collection
     {
         return $this->posts;
     }
 
+    /**
+     * Add a post authored by the user.
+     *
+     * @param Post $post The post to add.
+     *
+     * @return static The updated User entity.
+     */
     public function addPost(Post $post): static
     {
         if (!$this->posts->contains($post)) {
@@ -169,6 +250,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Remove a post authored by the user.
+     *
+     * @param Post $post The post to remove.
+     *
+     * @return static The updated User entity.
+     */
     public function removePost(Post $post): static
     {
         if ($this->posts->removeElement($post)) {
@@ -181,11 +269,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Get the profile image of the user.
+     *
+     * @return Image|null The profile image of the user.
+     */
     public function getImage(): ?Image
     {
         return $this->image;
     }
 
+    /**
+     * Set the profile image of the user.
+     *
+     * @param Image|null $image The profile image to set.
+     *
+     * @return static The updated User entity.b
+     */
     public function setImage(?Image $image): static
     {
         $this->image = $image;
@@ -194,13 +294,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, self>
+     * Get the users who are following this user.
+     *
+     * @return Collection<User> The users who are following this user.
      */
     public function getFollowers(): Collection
     {
         return $this->followers;
     }
 
+    /**
+     * Add a user to the list of users whom follow this user.
+     *
+     * @param User $follower The user to add.
+     *
+     * @return static The updated User entity.
+     */
     public function addFollower(self $follower): static
     {
         if (!$this->followers->contains($follower)) {
@@ -210,6 +319,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Remove a user from the list of users whom follow the user.
+     *
+     * @param User $follower The user to remove.
+     *
+     * @return static The updated User entity.
+     */
     public function removeFollower(self $follower): static
     {
         $this->followers->removeElement($follower);
@@ -218,13 +334,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, self>
+     * Get the users whom this user is following.
+     *
+     * @return Collection<User> The users whom this user is following.
      */
     public function getFollowing(): Collection
     {
         return $this->following;
     }
 
+    /**
+     * Add a user to the list of users whom this user is following.
+     *
+     * @param User $following The user to add.
+     *
+     * @return static The updated User entity.
+     */
     public function addFollowing(self $following): static
     {
         if (!$this->following->contains($following)) {
@@ -234,7 +359,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
+    /**
+     * Remove a user from the list of users whom this user is following.
+     *
+     * @param User $following The user to remove.
+     *
+     * @return static The updated User entity.
+     */
     public function removeFollowing(self $following): static
     {
         if ($this->following->removeElement($following)) {
@@ -245,13 +376,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Post>
+     * Get the posts liked by this user.
+     *
+     * @return Collection<Post> The posts liked by this user.
      */
     public function getLikesPosts(): Collection
     {
         return $this->likesPosts;
     }
 
+    /**
+     * Add a post to the list of posts liked by this user.
+     *
+     * @param Post $likesPost The post to add.
+     *
+     * @return static The updated User entity.
+     */
     public function addLikesPost(Post $likesPost): static
     {
         if (!$this->likesPosts->contains($likesPost)) {
@@ -261,6 +401,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Remove a post from the list of posts liked by this user.
+     *
+     * @param Post $likesPost The post to remove.
+     *
+     * @return static The updated User entity.
+     */
     public function removeLikesPost(Post $likesPost): static
     {
         $this->likesPosts->removeElement($likesPost);
@@ -269,13 +416,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Post>
+     * Get the posts disliked by this user.
+     *
+     * @return Collection<Post> The posts disliked by this user.
      */
     public function getDisklikedPosts(): Collection
     {
         return $this->disklikedPosts;
     }
 
+    /**
+     * Add a post to the list of posts disliked by this user.
+     *
+     * @param Post $disklikedPost The post to add.
+     *
+     * @return static The updated User entity.
+     */
     public function addDisklikedPost(Post $disklikedPost): static
     {
         if (!$this->disklikedPosts->contains($disklikedPost)) {
@@ -285,6 +441,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Remove a post from the list of posts disliked by this user.
+     *
+     * @param Post $disklikedPost The post to remove.
+     *
+     * @return static The updated User entity.
+     */
     public function removeDisklikedPost(Post $disklikedPost): static
     {
         $this->disklikedPosts->removeElement($disklikedPost);

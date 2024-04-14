@@ -9,4 +9,3 @@ final class LikeIconComponent
 {
     public string $class;
 }
-

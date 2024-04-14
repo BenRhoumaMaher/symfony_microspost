@@ -9,4 +9,3 @@ final class UnlikeIconComponent
 {
     public string $class;
 }
-

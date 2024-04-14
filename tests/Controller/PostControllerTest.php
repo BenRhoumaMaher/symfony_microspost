@@ -1,5 +1,16 @@
 <?php
-
+/**
+ * PostControllerTest.php
+ *
+ * This file contains the PostControllerTest class, which tests the Posting functionality of the application.
+ *
+ * @category Tests
+ * @package  App\Tests\Controller
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    [Version Number]
+ */
 namespace App\Tests\Controller;
 
 use App\Entity\Post;
@@ -9,8 +20,29 @@ use Doctrine\ORM\EntityManagerInterface;
 use phpDocumentor\Reflection\Types\Void_;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * PostControllerTest
+ *
+ * This class contains test cases for the posting functionality of the application.
+ *
+ * @category Tests
+ *
+ * @package App\Tests\Controller
+ *
+ * @author Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * 
+ * @license No license (Personal project)
+ * 
+ * @link https://symfony.com/doc/current/controller.html
+ */
 class PostControllerTest extends WebTestCase
 {
+
+    /**
+     * Test the displaying text.
+     *
+     * @return void
+     */
     public function testSomething(): void
     {
         $client = static::createClient();
@@ -19,6 +51,12 @@ class PostControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'Latest posts');
     }
+
+    /**
+     * Test seeing content after registering.
+     *
+     * @return void
+     */
     public function testSeeContent(): void
     {
         $client = static::createClient();
@@ -28,6 +66,12 @@ class PostControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Register');
         $this->assertSelectorTextNotContains('h1', 'absc');
     }
+
+    /**
+     * Test the Creating new post.
+     *
+     * @return void
+     */
     public function testCreatePost(): void
     {
         $client = static::createClient();
@@ -55,6 +99,12 @@ class PostControllerTest extends WebTestCase
         $client->request('GET', "http://127.0.0.1:8000/post/edit/{$post->getId()}");
         $this->assertInputValueSame('post[title]', 'post title');
     }
+
+    /**
+     * Test counting number of posts in the database.
+     *
+     * @return void
+     */
     public function testDatabaseCount(): void
     {
         $postRepository = static::getContainer()->get(PostRepository::class);
@@ -65,6 +115,12 @@ class PostControllerTest extends WebTestCase
 
         $this->assertEquals(27, $totalPost);
     }
+
+    /**
+     * Test adding new post.
+     *
+     * @return void
+     */
     public function testAddPost(): void
     {
         $client = static::createClient();
@@ -92,6 +148,12 @@ class PostControllerTest extends WebTestCase
         $this->assertNotNull($us);
         $this->assertSame('new name', $us->getName());
     }
+
+    /**
+     * Test registreting using api.
+     *
+     * @return void
+     */
     public function testApiRegister(): void
     {
         $client = static::createClient();
@@ -105,6 +167,12 @@ class PostControllerTest extends WebTestCase
         );
         $this->assertResponseIsSuccessful();
     }
+
+    /**
+     * Test loggin using api.
+     *
+     * @return void
+     */
     public function testApiLogin(): void
     {
         $client = static::createClient();
@@ -121,6 +189,12 @@ class PostControllerTest extends WebTestCase
         dump(json_decode($response->getContent(), true)['token']);
         $this->assertResponseIsSuccessful();
     }
+
+    /**
+     * Test add post using api.
+     *
+     * @return void
+     */
     public function testApiLoginAddPost(): void
     {
         $client = static::createClient();

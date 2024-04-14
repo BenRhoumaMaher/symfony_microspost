@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * PostFixtures.php
+ *
+ * This file contains the definition of the PostFixtures class, which is responsible for
+ * loading dummy data into the database for testing purposes.
+ *
+ * @category Fixtures
+ * @package  App\DataFixtures
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/doctrine.html#fixtures
+ * @since    PHP 8.2
+ */
+
 namespace App\DataFixtures;
 
 use Faker\Factory;
@@ -9,11 +23,40 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * PostFixtures
+ *
+ * @category Fixtures
+ *
+ * @package App\DataFixtures
+ *
+ * @author Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ *
+ * @license No license (Personal project)
+ *
+ * @link https://symfony.com/doc/current/doctrine.html#fixtures
+ */
+
 class PostFixtures extends Fixture
 {
+    /**
+     * Constructor for PostFixtures class
+     *
+     * @param UserPasswordHasherInterface $hasher The user password hasher interface
+     *
+     * @return void
+     */
     public function __construct(private UserPasswordHasherInterface $hasher)
     {
     }
+
+    /**
+     * Load method to load dummy data into the database
+     *
+     * @param ObjectManager $manager The object manager
+     *
+     * @return void
+     */
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();

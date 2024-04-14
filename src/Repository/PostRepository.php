@@ -1,27 +1,61 @@
 <?php
+/**
+ * PostRepository.php
+ *
+ * This file contains the definition of the PostRepository class
+ * , which is used to manage Post entity.
+ *
+ * @category Repositories
+ * @package  App\Repository
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    PHP 8.2
+ */
 
 namespace App\Repository;
 
 use App\Entity\Post;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
+ * Repository class for managing Post entities.
+ * 
  * @extends ServiceEntityRepository<Post>
  *
- * @method Post|null find($id, $lockMode = null, $lockVersion = null)
- * @method Post|null findOneBy(array $criteria, array $orderBy = null)
- * @method Post[]    findAll()
- * @method Post[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method   Post|null find($id, $lockMode = null, $lockVersion = null)
+ * @method   Post|null findOneBy(array $criteria, array $orderBy = null)
+ * @method   Post[]    findAll()
+ * @category Repositories
+ * @package  App\Repository\AdminsRepository
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    PHP 8.2    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class PostRepository extends ServiceEntityRepository
 {
+    /**
+     * PostRepository constructor.
+     * 
+     * @param ManagerRegistry    $registry  The registry service for managing entity managers.
+     * @param PaginatorInterface $paginator The paginator service for managing pagination.
+     */
     public function __construct(ManagerRegistry $registry, private PaginatorInterface $paginator)
     {
         parent::__construct($registry, Post::class);
     }
 
+    /**
+     * Find all posts.
+     * 
+     * @param int $page The page number.
+     * 
+     * @return PaginatorInterface
+     */
     public function findAllPosts(int $page)
     {
         $query = $this->createQueryBuilder('p')
@@ -37,6 +71,14 @@ class PostRepository extends ServiceEntityRepository
         return $this->paginator->paginate($query, $page, 3);
     }
 
+    /**
+     * Find all user posts.
+     * 
+     * @param int $page   The page number.
+     * @param int $userId The user id.
+     * 
+     * @return PaginatorInterface
+     */
     public function findAllUserPosts(int $page, $userId)
     {
         $query = $this->createQueryBuilder('p')
@@ -53,6 +95,14 @@ class PostRepository extends ServiceEntityRepository
         return $this->paginator->paginate($query, $page, 3);
     }
 
+    /**
+     * Find the liked post.
+     * 
+     * @param User $authUser The page number.
+     * @param int  $postId   The post id.
+     * 
+     * @return PaginatorInterface
+     */
     public function isLiked($authUser, $postId): array
     {
         $query = $this->createQueryBuilder('p')
@@ -68,6 +118,14 @@ class PostRepository extends ServiceEntityRepository
         return $query;
     }
 
+    /**
+     * Find the disliked post.
+     * 
+     * @param User $authUser The page number.
+     * @param int  $postId   The post id.
+     * 
+     * @return PaginatorInterface
+     */
     public function isDisLiked($authUser, $postId): array
     {
         $query = $this->createQueryBuilder('p')
@@ -83,10 +141,17 @@ class PostRepository extends ServiceEntityRepository
         return $query;
     }
 
+    /**
+     * Search the posts.
+     * 
+     * @param string $query The search query.
+     * 
+     * @return PaginatorInterface
+     */
     public function searchPosts(string $query)
     {
         $querybuilder = $this->createQueryBuilder('p');
-        $searchTerms = $this->prepareQuery($query);
+        $searchTerms = $this->_prepareQuery($query);
         foreach ($searchTerms as $key => $term) {
             $querybuilder
                 ->orWhere('p.title LIKE :t_' . $key)
@@ -100,38 +165,22 @@ class PostRepository extends ServiceEntityRepository
         return $dbquery;
     }
 
-    private function prepareQuery(string $query): array
+    /**
+     * Prepare the search query.
+     * 
+     * @param string $query The search query.
+     * 
+     * @return PaginatorInterface
+     */
+    private function _prepareQuery(string $query): array
     {
         $terms = array_unique(explode(' ', $query));
 
-        return array_filter($terms, function ($term) {
-            return 2 <= mb_strlen($term);
-        });
+        return array_filter(
+            $terms,
+            function ($term) {
+                return 2 <= mb_strlen($term);
+            }
+        );
     }
-
-
-    //    /**
-//     * @return Post[] Returns an array of Post objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-    //    public function findOneBySomeField($value): ?Post
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

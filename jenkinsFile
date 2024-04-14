@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                bat 'composer install'
+            }
+        }
+        stage('Test') {
+            steps {
+                bat 'php bin/phpunit tests/Controller/PostControllerTest.php'
+                bat 'php bin/phpunit tests/Controller/LoginControllerTest.php'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat 'php bin/console doctrine:migrations:migrate --no-interaction'
+                bat 'php bin/console cache:clear --env=prod'
+            }
+        }
+    }
+}

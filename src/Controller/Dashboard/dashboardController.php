@@ -1,4 +1,17 @@
 <?php
+/**
+ * DashboardController.php
+ *
+ * This file contains the definition of the dashbordController class, which handles
+ * actions related to the dashbord in the application.
+ *
+ * @category Controllers
+ * @package  App\Controller\Dashboard
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    PHP 8.2
+ */
 
 namespace App\Controller\Dashboard;
 
@@ -17,11 +30,33 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 
+/**
+ * PostsController
+ *
+ * @category Controllers
+ *
+ * @package App\Controller\Dashboard
+ *
+ * @author Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ *
+ * @license No license (Personal project)
+ *
+ * @link https://symfony.com/doc/current/controller.html
+ */
 class dashboardController extends AbstractController
 {
-
+    /**
+     * Constructor.
+     *
+     * @param EntityManagerInterface $em              The entity manager.
+     * @param ImageRepository        $imagerepository The images repository.
+     * @param Security               $security        The security object.
+     * @param ImageUploader          $imageuploader   The image uploader.
+     *
+     * @return void
+     */
     public function __construct(
-        private EntityManagerInterface $em,
+        private EntityManagerInterface $entityManagerInterface,
         private ImageRepository $imagerepository,
         private Security $security,
         private ImageUploader $imageuploader
@@ -29,14 +64,28 @@ class dashboardController extends AbstractController
     }
 
     #[Route('/dashboard', name: 'dashboard_index')]
-
+    /**
+     * Index Method to display dashboard interface
+     *
+     * @return Response
+     */
     public function index(): Response
     {
-        return $this->render('dashboard/index.html.twig', [
-            'controller_name' => 'DashboardController',
-        ]);
+        return $this->render(
+            'dashboard/index.html.twig',
+            [
+                'controller_name' => 'DashboardController',
+            ]
+        );
     }
 
+    /**
+     * Pofile Method to handle functionalities in the user's profile
+     * 
+     * @param Request $request The request object.
+     *
+     * @return Response
+     */
     public function profile(Request $request): Response
     {
         $image = new Image();
@@ -60,13 +109,13 @@ class dashboardController extends AbstractController
                     $oldImage = $this->imagerepository->find(
                         $user->getImage()->getId()
                     );
-                    $this->em->remove($oldImage);
+                    $this->entityManagerInterface->remove($oldImage);
                 }
 
                 $user->setImage($image);
-                $this->em->persist($image);
-                $this->em->persist($user);
-                $this->em->flush();
+                $this->entityManagerInterface->persist($image);
+                $this->entityManagerInterface->persist($user);
+                $this->entityManagerInterface->flush();
 
                 $this->addFlash('status-image', 'image-updated');
             }
@@ -76,8 +125,8 @@ class dashboardController extends AbstractController
         $userForm = $this->createForm(UserFormType::class, $user);
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
-            $this->em->persist($user);
-            $this->em->flush();
+            $this->entityManagerInterface->persist($user);
+            $this->entityManagerInterface->flush();
             $this->addFlash('status-profile-information', 'user-updated');
             return $this->redirectToRoute('dashboard_profile');
         }
@@ -86,8 +135,8 @@ class dashboardController extends AbstractController
         $passwordForm->handleRequest($request);
 
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
-            $this->em->persist($user);
-            $this->em->flush();
+            $this->entityManagerInterface->persist($user);
+            $this->entityManagerInterface->flush();
             $this->addFlash('status-password', 'password-changed');
             return $this->redirectToRoute('dashboard_profile');
         }
@@ -96,18 +145,21 @@ class dashboardController extends AbstractController
         $deleteAccountForm->handleRequest($request);
         if ($deleteAccountForm->isSubmitted() && $deleteAccountForm->isValid()) {
             $this->security->logout(false);
-            $this->em->remove($user);
-            $this->em->flush();
+            $this->entityManagerInterface->remove($user);
+            $this->entityManagerInterface->flush();
             $request->getSession()->invalidate();
             return $this->redirectToRoute('posts_index');
         }
 
 
-        return $this->render('dashboard/edit.html.twig', [
-            'imageForm' => $form,
-            'userForm' => $userForm,
-            'passwordForm' => $passwordForm,
-            'deleteAccountForm' => $deleteAccountForm
-        ]);
+        return $this->render(
+            'dashboard/edit.html.twig',
+            [
+                'imageForm' => $form,
+                'userForm' => $userForm,
+                'passwordForm' => $passwordForm,
+                'deleteAccountForm' => $deleteAccountForm
+            ]
+        );
     }
 }

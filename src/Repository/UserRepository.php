@@ -1,4 +1,17 @@
 <?php
+/**
+ * UserRepository.php
+ *
+ * This file contains the definition of the UserRepository class
+ * , which is used to manage User entity.
+ *
+ * @category Repositories
+ * @package  App\Repository
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    PHP 8.2
+ */
 
 namespace App\Repository;
 
@@ -10,21 +23,43 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
- * @extends ServiceEntityRepository<User>
+ * Repository class for managing User entities.
+ * 
+ * @extends    ServiceEntityRepository<User>
  * @implements PasswordUpgraderInterface<User>
  *
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method   User|null find($id, $lockMode = null, $lockVersion = null)
+ * @method   User|null findOneBy(array $criteria, array $orderBy = null)
+ * @method   User[]    findAll()
+ * @method   User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @category Repositories
+ * @package  App\Repository\AdminsRepository
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    PHP 8.2    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
+
+    /**
+     * PostRepository constructor.
+     * 
+     * @param ManagerRegistry $registry The registry service for managing entity managers.
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * Find if user following
+     * 
+     * @param User $authUser The authenticated user.
+     * @param User $user     The user to check if following.
+     * 
+     * @return array
+     */
     public function isFollowing($authUser, $user): array
     {
         return $this->createQueryBuilder('u')
@@ -42,6 +77,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
+     * 
+     * @param UserInterface $user              The user.
+     * @param string        $newHashedPassword The new hashed password.
+     * 
+     * @return void
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
@@ -53,29 +93,4 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
-
-    //    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-    //    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

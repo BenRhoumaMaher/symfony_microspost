@@ -1,4 +1,17 @@
 <?php
+/**
+ * RegistrationController.php
+ *
+ * This file contains the definition of the RegistrationController class
+ * , which handles authentification of users in our application
+ *
+ * @category Controllers
+ * @package  App\Controller
+ * @author   Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ * @license  No license (Personal project)
+ * @link     https://symfony.com/doc/current/controller.html
+ * @since    PHP 8.2
+ */
 
 namespace App\Controller;
 
@@ -12,9 +25,31 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * RegistrationController
+ *
+ * @category Controllers
+ *
+ * @package App\Controller
+ *
+ * @author Maher Ben Rhouma <maherbenrhouma@gmail.com>
+ *
+ * @license No license (Personal project)
+ *
+ * @link https://symfony.com/doc/current/controller.html
+ */
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
+    /**
+     * Register Method to register the users
+     *
+     * @param Request                     $request            The request object
+     * @param UserPasswordHasherInterface $userPasswordHasher The user password hasher
+     * @param EntityManagerInterface      $entityManager      The entity manager
+     *
+     * @return Response
+     */
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
@@ -37,8 +72,11 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('dashboard_index');
         }
 
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
+        return $this->render(
+            'registration/register.html.twig',
+            [
+                'registrationForm' => $form->createView(),
+            ]
+        );
     }
 }
