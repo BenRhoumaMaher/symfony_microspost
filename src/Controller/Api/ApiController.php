@@ -15,6 +15,7 @@
 
 namespace App\Controller\Api;
 
+use Exception;
 use App\Entity\Post;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,7 +55,7 @@ class ApiController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
             if (!$data || !$data['title'] || !$data['content']) {
-                throw new \Exception("data not valid");
+                throw new Exception("data not valid");
             }
             $post = new Post();
             $post->setTitle($data['title']);
@@ -97,7 +98,7 @@ class ApiController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
             if (!$data || !$data['name'] || !$data['email'] || !$data['password']) {
-                throw new \Exception("data not valid");
+                throw new Exception("data not valid");
             }
             $user = new User();
             $hashedPassword = $passwordHasher->hashPassword(
@@ -115,7 +116,7 @@ class ApiController extends AbstractController
                 ],
                 200
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(
                 [
                     'error' => 'User not registered!',
